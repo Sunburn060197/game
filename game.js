@@ -6,7 +6,7 @@ const config = {
     speedUpScore: 50,      // 每得多少分加速一次
     foodColor: '#ff0000',  // 食物颜色
     snakeColors: {         // 蛇的颜色配置
-        head: '#00CED1',   // 蛇头颜色（青绿色）
+        head: '#2E7D32',   // 蛇头颜色（深绿色，与身体偶数节相同）
         body1: '#4CAF50',  // 蛇身第一种颜色（浅绿色）
         body2: '#2E7D32'   // 蛇身第二种颜色（深绿色）
     },
@@ -227,15 +227,14 @@ function draw() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // 绘制食物
+    const foodX = (gameState.food.x + 0.5) * config.gridSize;
+    const foodY = (gameState.food.y + 0.5) * config.gridSize;
+    const foodSize = config.gridSize / 2.5;
+
+    // 绘制食物（简单的红点）
     ctx.fillStyle = config.foodColor;
     ctx.beginPath();
-    ctx.arc(
-        (gameState.food.x + 0.5) * config.gridSize,
-        (gameState.food.y + 0.5) * config.gridSize,
-        config.gridSize / 2.5,
-        0,
-        Math.PI * 2
-    );
+    ctx.arc(foodX, foodY, foodSize, 0, Math.PI * 2);
     ctx.fill();
     
     // 绘制蛇
@@ -255,6 +254,50 @@ function draw() {
                 0,
                 Math.PI * 2
             );
+            ctx.fill();
+            
+            // 添加眼睛
+            const eyeSize = config.snakeSizes.head / 6; // 眼睛大小
+            const eyeOffset = config.snakeSizes.head / 4; // 眼睛偏移量
+            
+            // 根据方向调整眼睛位置
+            let eyeX1, eyeX2, eyeY1, eyeY2;
+            switch (gameState.direction) {
+                case 'right':
+                    eyeX1 = eyeX2 = centerX + eyeOffset;
+                    eyeY1 = centerY - eyeOffset;
+                    eyeY2 = centerY + eyeOffset;
+                    break;
+                case 'left':
+                    eyeX1 = eyeX2 = centerX - eyeOffset;
+                    eyeY1 = centerY - eyeOffset;
+                    eyeY2 = centerY + eyeOffset;
+                    break;
+                case 'up':
+                    eyeX1 = centerX - eyeOffset;
+                    eyeX2 = centerX + eyeOffset;
+                    eyeY1 = eyeY2 = centerY - eyeOffset;
+                    break;
+                case 'down':
+                    eyeX1 = centerX - eyeOffset;
+                    eyeX2 = centerX + eyeOffset;
+                    eyeY1 = eyeY2 = centerY + eyeOffset;
+                    break;
+            }
+            
+            // 绘制眼睛
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(eyeX1, eyeY1, eyeSize, 0, Math.PI * 2);
+            ctx.arc(eyeX2, eyeY2, eyeSize, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制瞳孔
+            ctx.fillStyle = 'black';
+            ctx.beginPath();
+            ctx.arc(eyeX1, eyeY1, eyeSize/2, 0, Math.PI * 2);
+            ctx.arc(eyeX2, eyeY2, eyeSize/2, 0, Math.PI * 2);
+            ctx.fill();
         } else {
             // 绘制蛇身（交替颜色的小圆形）
             ctx.fillStyle = index % 2 === 1 ? config.snakeColors.body1 : config.snakeColors.body2;
@@ -265,8 +308,8 @@ function draw() {
                 0,
                 Math.PI * 2
             );
+            ctx.fill();
         }
-        ctx.fill();
         
         // 为每个部分添加高光效果
         ctx.beginPath();
