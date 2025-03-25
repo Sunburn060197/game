@@ -37,6 +37,57 @@ let gameState = {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// 添加触摸事件支持
+let touchStartX = 0;
+let touchStartY = 0;
+
+// 添加触摸事件监听器
+canvas.addEventListener('touchstart', handleTouchStart, false);
+canvas.addEventListener('touchmove', handleTouchMove, false);
+canvas.addEventListener('touchend', handleTouchEnd, false);
+
+// 处理触摸开始事件
+function handleTouchStart(event) {
+    event.preventDefault(); // 防止页面滚动
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+}
+
+// 处理触摸移动事件
+function handleTouchMove(event) {
+    event.preventDefault(); // 防止页面滚动
+    const touchEndX = event.touches[0].clientX;
+    const touchEndY = event.touches[0].clientY;
+    
+    // 计算滑动方向
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    
+    // 判断滑动方向（水平滑动距离大于垂直滑动距离时才改变方向）
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0 && gameState.direction !== 'left') {
+            gameState.nextDirection = 'right';
+        } else if (deltaX < 0 && gameState.direction !== 'right') {
+            gameState.nextDirection = 'left';
+        }
+    } else {
+        if (deltaY > 0 && gameState.direction !== 'up') {
+            gameState.nextDirection = 'down';
+        } else if (deltaY < 0 && gameState.direction !== 'down') {
+            gameState.nextDirection = 'up';
+        }
+    }
+    
+    // 更新起始点
+    touchStartX = touchEndX;
+    touchStartY = touchEndY;
+}
+
+// 处理触摸结束事件
+function handleTouchEnd(event) {
+    event.preventDefault(); // 防止页面滚动
+}
+
 // 初始化游戏
 function initGame() {
     // 初始化蛇的位置（从中间开始）

@@ -49,6 +49,10 @@ h1 {
     border-radius: 5px;         /* 设置边框圆角为5像素 */
     background-color: #000;     /* 设置画布背景为黑色 */
     margin-bottom: 20px;        /* 底部外边距为20像素 */
+    touch-action: none;         /* 禁用默认的触摸行为 */
+    -webkit-tap-highlight-color: transparent; /* 移除点击时的高亮效果 */
+    user-select: none;          /* 防止文本选择 */
+    -webkit-user-select: none;  /* Safari支持 */
 }
 
 /* 控制按钮容器的样式 */
